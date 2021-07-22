@@ -19,7 +19,7 @@
 //! # Ok::<(), electrum_client::Error>(())
 //! ```
 
-pub extern crate bitcoin;
+pub extern crate dogecoin;
 extern crate core;
 extern crate log;
 #[cfg(feature = "use-openssl")]

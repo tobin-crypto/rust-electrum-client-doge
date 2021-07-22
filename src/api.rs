@@ -2,8 +2,8 @@
 
 use std::convert::TryInto;
 
-use bitcoin::consensus::encode::{deserialize, serialize};
-use bitcoin::{BlockHeader, Script, Transaction, Txid};
+use dogecoin::consensus::encode::{deserialize, serialize};
+use dogecoin::{BlockHeader, Script, Transaction, Txid};
 
 use batch::Batch;
 use types::*;

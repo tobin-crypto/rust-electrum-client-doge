@@ -14,9 +14,9 @@ use std::time::Duration;
 #[allow(unused_imports)]
 use log::{debug, error, info, trace, warn};
 
-use bitcoin::consensus::encode::deserialize;
-use bitcoin::hashes::hex::{FromHex, ToHex};
-use bitcoin::{Script, Txid};
+use dogecoin::consensus::encode::deserialize;
+use dogecoin::hashes::hex::{FromHex, ToHex};
+use dogecoin::{Script, Txid};
 
 #[cfg(feature = "use-openssl")]
 use openssl::ssl::{SslConnector, SslMethod, SslStream, SslVerifyMode};
@@ -1075,7 +1075,7 @@ mod test {
 
         // Realistically nobody will ever spend from this address, so we can expect the balance to
         // increase over time
-        let addr = bitcoin::Address::from_str("1CounterpartyXXXXXXXXXXXXXXXUWLpVr").unwrap();
+        let addr = dogecoin::Address::from_str("1CounterpartyXXXXXXXXXXXXXXXUWLpVr").unwrap();
         let resp = client.script_get_balance(&addr.script_pubkey()).unwrap();
         assert!(resp.confirmed >= 213091301265);
     }
@@ -1084,13 +1084,13 @@ mod test {
     fn test_script_get_history() {
         use std::str::FromStr;
 
-        use bitcoin::hashes::hex::FromHex;
-        use bitcoin::Txid;
+        use dogecoin::hashes::hex::FromHex;
+        use dogecoin::Txid;
 
         let client = RawClient::new(get_test_server(), None).unwrap();
 
         // Mt.Gox hack address
-        let addr = bitcoin::Address::from_str("1FeexV6bAHb8ybZjqQMjJrcCrHGW9sb6uF").unwrap();
+        let addr = dogecoin::Address::from_str("1FeexV6bAHb8ybZjqQMjJrcCrHGW9sb6uF").unwrap();
         let resp = client.script_get_history(&addr.script_pubkey()).unwrap();
 
         assert!(resp.len() >= 328);
@@ -1103,14 +1103,14 @@ mod test {
 
     #[test]
     fn test_script_list_unspent() {
-        use bitcoin::hashes::hex::FromHex;
-        use bitcoin::Txid;
+        use dogecoin::hashes::hex::FromHex;
+        use dogecoin::Txid;
         use std::str::FromStr;
 
         let client = RawClient::new(get_test_server(), None).unwrap();
 
         // Mt.Gox hack address
-        let addr = bitcoin::Address::from_str("1FeexV6bAHb8ybZjqQMjJrcCrHGW9sb6uF").unwrap();
+        let addr = dogecoin::Address::from_str("1FeexV6bAHb8ybZjqQMjJrcCrHGW9sb6uF").unwrap();
         let resp = client.script_list_unspent(&addr.script_pubkey()).unwrap();
 
         assert!(resp.len() >= 329);
@@ -1130,7 +1130,7 @@ mod test {
         let client = RawClient::new(get_test_server(), None).unwrap();
 
         // Mt.Gox hack address
-        let script_1 = bitcoin::Address::from_str("1FeexV6bAHb8ybZjqQMjJrcCrHGW9sb6uF")
+        let script_1 = dogecoin::Address::from_str("1FeexV6bAHb8ybZjqQMjJrcCrHGW9sb6uF")
             .unwrap()
             .script_pubkey();
 
@@ -1151,8 +1151,8 @@ mod test {
 
     #[test]
     fn test_transaction_get() {
-        use bitcoin::hashes::hex::FromHex;
-        use bitcoin::Txid;
+        use dogecoin::hashes::hex::FromHex;
+        use dogecoin::Txid;
 
         let client = RawClient::new(get_test_server(), None).unwrap();
 
@@ -1168,8 +1168,8 @@ mod test {
 
     #[test]
     fn test_transaction_get_raw() {
-        use bitcoin::hashes::hex::FromHex;
-        use bitcoin::Txid;
+        use dogecoin::hashes::hex::FromHex;
+        use dogecoin::Txid;
 
         let client = RawClient::new(get_test_server(), None).unwrap();
 
@@ -1203,8 +1203,8 @@ mod test {
 
     #[test]
     fn test_transaction_get_merkle() {
-        use bitcoin::hashes::hex::FromHex;
-        use bitcoin::Txid;
+        use dogecoin::hashes::hex::FromHex;
+        use dogecoin::Txid;
 
         let client = RawClient::new(get_test_server(), None).unwrap();
 
@@ -1248,7 +1248,7 @@ mod test {
         let client = RawClient::new(get_test_server(), None).unwrap();
 
         // Mt.Gox hack address
-        let addr = bitcoin::Address::from_str("1FeexV6bAHb8ybZjqQMjJrcCrHGW9sb6uF").unwrap();
+        let addr = dogecoin::Address::from_str("1FeexV6bAHb8ybZjqQMjJrcCrHGW9sb6uF").unwrap();
 
         // Just make sure that the call returns Ok(something)
         client.script_subscribe(&addr.script_pubkey()).unwrap();

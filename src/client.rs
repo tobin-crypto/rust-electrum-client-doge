@@ -4,7 +4,7 @@ use std::sync::RwLock;
 
 use log::{info, warn};
 
-use bitcoin::{Script, Txid};
+use dogecoin::{Script, Txid};
 
 use api::ElectrumApi;
 use batch::Batch;

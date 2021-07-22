@@ -2,8 +2,8 @@
 //!
 //! This module contains definitions and helper functions used when making batch calls.
 
-use bitcoin::hashes::hex::ToHex;
-use bitcoin::{Script, Txid};
+use dogecoin::hashes::hex::ToHex;
+use dogecoin::{Script, Txid};
 
 use types::{Param, ToElectrumScriptHash};
 
