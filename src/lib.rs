@@ -19,8 +19,8 @@
 //! # Ok::<(), electrum_client::Error>(())
 //! ```
 
-pub extern crate dogecoin;
 extern crate core;
+pub extern crate dogecoin;
 extern crate log;
 #[cfg(feature = "use-openssl")]
 extern crate openssl;
@@ -41,10 +41,6 @@ extern crate webpki_roots;
 mod api;
 mod batch;
 
-#[cfg(any(
-    all(feature = "proxy", feature = "use-openssl"),
-    all(feature = "proxy", feature = "use-rustls")
-))]
 pub mod client;
 
 mod config;
@@ -55,10 +51,8 @@ mod types;
 
 pub use api::ElectrumApi;
 pub use batch::Batch;
-#[cfg(any(
-    all(feature = "proxy", feature = "use-openssl"),
-    all(feature = "proxy", feature = "use-rustls")
-))]
 pub use client::*;
-pub use config::{Config, ConfigBuilder, Socks5Config};
+#[cfg(feature = "proxy")]
+pub use config::Socks5Config;
+pub use config::{Config, ConfigBuilder};
 pub use types::*;

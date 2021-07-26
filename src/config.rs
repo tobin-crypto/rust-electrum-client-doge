@@ -3,6 +3,7 @@ use std::time::Duration;
 
 #[derive(Debug, Clone)]
 pub struct Config {
+    #[cfg(feature = "proxy")]
     /// Proxy socks5 configuration, default None
     socks5: Option<Socks5Config>,
     /// timeout in seconds, default None (depends on TcpStream default)
@@ -13,6 +14,7 @@ pub struct Config {
     validate_domain: bool,
 }
 
+#[cfg(feature = "proxy")]
 /// Configuration for Socks5
 #[derive(Debug, Clone)]
 pub struct Socks5Config {
@@ -22,6 +24,7 @@ pub struct Socks5Config {
     pub credentials: Option<Socks5Credential>,
 }
 
+#[cfg(feature = "proxy")]
 /// Credential for the proxy
 #[derive(Debug, Clone)]
 pub struct Socks5Credential {
@@ -42,6 +45,7 @@ impl ConfigBuilder {
         }
     }
 
+    #[cfg(feature = "proxy")]
     /// Set the socks5 config if Some, it accept an `Option` because it's easier for the caller to use
     /// in a method chain
     pub fn socks5(mut self, socks5_config: Option<Socks5Config>) -> Result<Self, Error> {
@@ -54,9 +58,15 @@ impl ConfigBuilder {
 
     /// Sets the timeout
     pub fn timeout(mut self, timeout: Option<u8>) -> Result<Self, Error> {
-        if timeout.is_some() && self.config.socks5.is_some() {
-            return Err(Error::BothSocksAndTimeout);
+        if timeout.is_some() {
+            #[cfg(feature = "proxy")]
+            {
+                if self.config.socks5.is_some() {
+                    return Err(Error::BothSocksAndTimeout);
+                }
+            }
         }
+
         self.config.timeout = timeout.map(|t| Duration::from_secs(t as u64));
         Ok(self)
     }
@@ -85,6 +95,7 @@ impl Default for ConfigBuilder {
     }
 }
 
+#[cfg(feature = "proxy")]
 impl Socks5Config {
     /// Socks5Config constructor without credentials
     pub fn new(addr: impl ToString) -> Self {
@@ -104,6 +115,7 @@ impl Socks5Config {
 }
 
 impl Config {
+    #[cfg(feature = "proxy")]
     pub fn socks5(&self) -> &Option<Socks5Config> {
         &self.socks5
     }
@@ -120,8 +132,17 @@ impl Config {
 
 impl Default for Config {
     fn default() -> Self {
+        #[cfg(feature = "proxy")]
+        {
+            return Config {
+                socks5: None,
+                timeout: None,
+                retry: 1,
+                validate_domain: true,
+            };
+        }
+        #[cfg(not(feature = "proxy"))]
         Config {
-            socks5: None,
             timeout: None,
             retry: 1,
             validate_domain: true,

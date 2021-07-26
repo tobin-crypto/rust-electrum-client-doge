@@ -21,8 +21,10 @@ use types::*;
 pub enum ClientType {
     #[allow(missing_docs)]
     TCP(RawClient<ElectrumPlaintextStream>),
+    #[cfg(any(feature = "use-rustls", features = "use-openssl"))]
     #[allow(missing_docs)]
     SSL(RawClient<ElectrumSslStream>),
+    #[cfg(feature = "proxy")]
     #[allow(missing_docs)]
     Socks5(RawClient<ElectrumProxyStream>),
 }
@@ -43,7 +45,9 @@ macro_rules! impl_inner_call {
             let read_client = $self.client_type.read().unwrap();
             let res = match &*read_client {
                 ClientType::TCP(inner) => inner.$name( $($args, )* ),
+                #[cfg(any(feature = "use-rustls", features = "use-openssl"))]
                 ClientType::SSL(inner) => inner.$name( $($args, )* ),
+                #[cfg(feature = "proxy")]
                 ClientType::Socks5(inner) => inner.$name( $($args, )* ),
             };
             drop(read_client);
@@ -108,26 +112,46 @@ impl ClientType {
     /// Constructor that supports multiple backends and allows configuration through
     /// the [Config]
     pub fn from_config(url: &str, config: &Config) -> Result<Self, Error> {
-        if url.starts_with("ssl://") {
-            let url = url.replacen("ssl://", "", 1);
-            let client = match config.socks5() {
-                Some(socks5) => {
-                    RawClient::new_proxy_ssl(url.as_str(), config.validate_domain(), socks5)?
-                }
-                None => {
-                    RawClient::new_ssl(url.as_str(), config.validate_domain(), config.timeout())?
-                }
-            };
+        #[cfg(any(
+            all(feature = "proxy", feature = "use-openssl"),
+            all(feature = "proxy", feature = "use-rustls")
+        ))]
+        {
+            if url.starts_with("ssl://") {
+                let url = url.replacen("ssl://", "", 1);
+                let client = match config.socks5() {
+                    Some(socks5) => {
+                        RawClient::new_proxy_ssl(url.as_str(), config.validate_domain(), socks5)?
+                    }
+                    None => RawClient::new_ssl(
+                        url.as_str(),
+                        config.validate_domain(),
+                        config.timeout(),
+                    )?,
+                };
 
-            Ok(ClientType::SSL(client))
-        } else {
-            let url = url.replacen("tcp://", "", 1);
+                let client =
+                    RawClient::new_ssl(url.as_str(), config.validate_domain(), config.timeout())?;
+                return Ok(ClientType::SSL(client));
+            } else {
+                let url = url.replacen("tcp://", "", 1);
 
-            Ok(match config.socks5().as_ref() {
-                None => ClientType::TCP(RawClient::new(url.as_str(), config.timeout())?),
-                Some(socks5) => ClientType::Socks5(RawClient::new_proxy(url.as_str(), socks5)?),
-            })
+                return Ok(match config.socks5().as_ref() {
+                    None => ClientType::TCP(RawClient::new(url.as_str(), config.timeout())?),
+                    Some(socks5) => ClientType::Socks5(RawClient::new_proxy(url.as_str(), socks5)?),
+                });
+            }
         }
+
+        if url.starts_with("ssl://") {
+            panic!("SSL not supported");
+        }
+        let url = url.replacen("tcp://", "", 1);
+
+        Ok(ClientType::TCP(RawClient::new(
+            url.as_str(),
+            config.timeout(),
+        )?))
     }
 }
 
