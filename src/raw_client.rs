@@ -1018,7 +1018,7 @@ mod test {
         let client = RawClient::new(get_test_server(), None).unwrap();
 
         let resp = client.relay_fee().unwrap();
-        assert_eq!(resp, 0.00001);
+        assert!((resp - 0.00001).abs() < f64::EPSILON);
     }
 
     #[test]
