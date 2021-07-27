@@ -1,6 +1,7 @@
 use crate::Error;
 use std::time::Duration;
 
+/// TODO: Add docs
 #[derive(Debug, Clone)]
 pub struct Config {
     #[cfg(feature = "proxy")]
@@ -119,12 +120,15 @@ impl Config {
     pub fn socks5(&self) -> &Option<Socks5Config> {
         &self.socks5
     }
+    /// TODO: Add docs
     pub fn retry(&self) -> u8 {
         self.retry
     }
+    /// TODO: Add docs
     pub fn timeout(&self) -> Option<Duration> {
         self.timeout
     }
+    /// TODO: Add docs
     pub fn validate_domain(&self) -> bool {
         self.validate_domain
     }
