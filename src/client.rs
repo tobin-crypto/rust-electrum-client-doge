@@ -1,5 +1,6 @@
 //! Electrum Client
 
+use std::net::TcpStream;
 use std::sync::RwLock;
 
 use log::{info, warn};
@@ -180,6 +181,15 @@ impl Client {
             config,
             url: url.to_string(),
         })
+    }
+
+    /// Construct an Client from the given TCP stream.
+    pub fn from_stream(stream: TcpStream) -> Self {
+        Client {
+            client_type: RwLock::new(ClientType::TCP(stream.into())),
+            config: Config::default(),  // FIXME: We shouldn't need config,
+            url: "<unused>".to_owned(), // or url.
+        }
     }
 }
 
