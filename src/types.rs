@@ -187,6 +187,56 @@ pub struct ServerFeaturesRes {
     pub pruning: Option<i64>,
 }
 
+/// Response to a getinfo  request.
+#[derive(Debug, Deserialize)]
+pub struct GetInfoRes {
+    pub coin: String,
+    pub daemon: String,
+    pub daemon_height: i64,
+    pub db_height: i64,
+    pub db_flush_count: i64,
+    pub groups: i64,
+    pub history_cache: String,
+    pub merkle_cache: String,
+    pub pid: i64,
+    pub peers: Peer,
+    pub request_counts: RequestCounts,
+    pub request_total: i64,
+    pub sessions: Sessions,
+    pub tx_hashes_cache: String,
+    pub txs_sent: i64,
+    pub uptime: String,
+    pub version: String,
+}
+
+/// Returned as part of a getinfo request.
+#[derive(Debug, Deserialize)]
+pub struct Peer {
+    pub bad: i64,
+    pub good: i64,
+    pub never: i64,
+    pub stale: i64,
+    pub total: i64,
+}
+
+/// Returned as part of a getinfo request.
+#[derive(Debug, Deserialize)]
+pub struct RequestCounts {
+    pub getinfo: i64,
+    pub invalid_method: i64,
+}
+
+/// Returned as part of a getinfo request.
+#[derive(Debug, Deserialize)]
+pub struct Sessions {
+    pub count: i64,
+    pub count_with_subs: i64,
+    pub errons: i64,
+    pub logged: i64,
+    pub pending_requests: i64,
+    pub subs: i64,
+}
+
 /// Response to a [`server_features`](../client/struct.Client.html#method.server_features) request.
 #[derive(Debug, Deserialize)]
 pub struct GetHeadersRes {

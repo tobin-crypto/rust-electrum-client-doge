@@ -191,6 +191,12 @@ impl Client {
             url: "<unused>".to_owned(), // or url.
         }
     }
+
+    /// Run the getinfo RPC method.
+    // TODO: This should be part of ElectrumApi.
+    pub fn get_info(&self) -> Result<GetInfoRes, Error> {
+        impl_inner_call!(self, get_info)
+    }
 }
 
 impl ElectrumApi for Client {
